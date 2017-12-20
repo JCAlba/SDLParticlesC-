@@ -8,37 +8,27 @@
 
 #include <iostream>
 #include <SDL2/SDL.h>
+#include "Screen.h"
 
 int main(int argc, const char * argv[]) {
-    const int SCREEN_WIDTH = 800;
-    const int SCREEN_HEIGHT = 600;
-    if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cout << "\nSDL failed" << std::endl;
-        return 1;
+    
+    jca::Screen screen;
+    
+    if(screen.init() == false) {
+        std::cout << "\nError initialising SDL" << std::endl;
     }
-    SDL_Window *window= SDL_CreateWindow("Particle explosions", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    
-    if(window == NULL) {
-        SDL_Quit();
-        return 2;
-    }
-    
-    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-    SDL_Texture * texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC,  SCREEN_WIDTH, SCREEN_HEIGHT);
-    
-    bool quit = false;
-    SDL_Event event;
-    
-    while(!quit){
-        while(SDL_PollEvent(&event)) {
-            if(event.type == SDL_QUIT){
-                quit = true;
-            }
+
+    while(true){
+        
+        screen.setPixel(400, 300, 255, 255, 255);
+        screen.update();
+        
+        if(screen.processEvents()==false){
+            break;
         }
+        
     }
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyTexture(texture);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    
+    screen.close();
     return 0;
 }
