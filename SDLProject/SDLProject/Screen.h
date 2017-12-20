@@ -14,8 +14,8 @@
 namespace jca {
     class Screen {
     public:
-        const int SCREEN_WIDTH = 800;
-        const int SCREEN_HEIGHT = 600;
+        static const int SCREEN_WIDTH = 800;
+        static const int SCREEN_HEIGHT = 600;
     private:
         SDL_Window * m_window;
         SDL_Renderer * m_renderer;

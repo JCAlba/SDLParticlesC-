@@ -28,6 +28,8 @@
 		2B75EECF1FEADAED00B35075 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		2B75EED71FEADB0200B35075 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		2B75EED91FEAE92500B35075 /* Screen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
+		2B75EEDA1FEB093300B35075 /* Particle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
+		2B75EEDB1FEB099900B35075 /* Swarm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Swarm.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,8 @@
 			children = (
 				2B75EECF1FEADAED00B35075 /* main.cpp */,
 				2B75EED91FEAE92500B35075 /* Screen.h */,
+				2B75EEDA1FEB093300B35075 /* Particle.h */,
+				2B75EEDB1FEB099900B35075 /* Swarm.h */,
 			);
 			path = SDLProject;
 			sourceTree = "<group>";
