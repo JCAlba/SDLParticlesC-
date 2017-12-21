@@ -16,18 +16,31 @@ namespace jca {
         const static int NPARTICLES = 5000;
     private:
         Particle *m_pParticles;
+        int lastTime;
     public:
         Swarm();
         virtual~Swarm();
         const Particle * const getParticles() { return m_pParticles;}
+        void update(int elapsed);
     };
     
-    Swarm::Swarm() {
+    Swarm::Swarm(): lastTime(0) {
         m_pParticles = new Particle[NPARTICLES];
     }
     
     Swarm::~Swarm() {
         delete [] m_pParticles;
+    }
+    
+    void Swarm::update(int elapsed) {
+        
+        int interval = elapsed - lastTime;
+        
+        for(int i = 0; i<Swarm::NPARTICLES; i++){
+            m_pParticles[i].update(interval);
+        }
+        
+        lastTime = elapsed;
     }
 }
 

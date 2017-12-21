@@ -20,7 +20,8 @@ namespace jca {
         SDL_Window * m_window;
         SDL_Renderer * m_renderer;
         SDL_Texture * m_texture;
-        Uint32 * m_buffer;
+        Uint32 * m_buffer1;
+        Uint32 * m_buffer2;
     public:
         Screen();
         bool init();
@@ -28,9 +29,10 @@ namespace jca {
         void setPixel(int x, int y, Uint8 red, Uint8 green, Uint8 blue);
         bool processEvents();
         void close();
+        void boxBlur();
     };
     
-    Screen::Screen(): m_window(NULL), m_renderer(NULL), m_texture(NULL), m_buffer(NULL) {}
+    Screen::Screen(): m_window(NULL), m_renderer(NULL), m_texture(NULL), m_buffer1(NULL), m_buffer2(NULL) {}
     
     bool Screen::init() {
         if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -59,17 +61,62 @@ namespace jca {
             return false;
         }
         
-        m_buffer = new Uint32[SCREEN_WIDTH*SCREEN_HEIGHT];
-        memset(m_buffer, 0, SCREEN_HEIGHT*SCREEN_WIDTH*sizeof(Uint32));
-        
-//        for (int i = 0; i<SCREEN_WIDTH*SCREEN_HEIGHT; i++){
-//            m_buffer[i] = 0xFF00FFFF;
-//        }
+        m_buffer1 = new Uint32[SCREEN_WIDTH*SCREEN_HEIGHT];
+        m_buffer2 = new Uint32[SCREEN_WIDTH*SCREEN_HEIGHT];
+        memset(m_buffer1, 0, SCREEN_HEIGHT*SCREEN_WIDTH*sizeof(Uint32));
+        memset(m_buffer2, 0, SCREEN_HEIGHT*SCREEN_WIDTH*sizeof(Uint32));
+
         return true;
     }
     
+    void Screen::boxBlur() {
+        //Swap buffers
+        Uint32 *temp = m_buffer1;
+        m_buffer1 = m_buffer2;
+        m_buffer2 = temp;
+        Uint8 red;
+        Uint8 green;
+        Uint8 blue;
+        
+        for(int y=0; y<SCREEN_HEIGHT; ++y) {
+            for(int x=0; x<SCREEN_WIDTH; ++x) {
+                /*
+                 * 0 0 0
+                 * 0 1 0
+                 * 0 0 0
+                 */
+                
+                int redTotal = 0;
+                int greenTotal = 0;
+                int blueTotal = 0;
+                for(int row = -1; row <= 1; ++row){
+                    for(int col = -1; col <= 1; ++col){
+                        int currentX = x+row;
+                        int currentY = y+col;
+                        
+                        if(currentX >= 0 && currentX < SCREEN_WIDTH && currentY >=0 && currentY < SCREEN_HEIGHT) {
+                            Uint32 color = m_buffer2[currentY*SCREEN_WIDTH + currentX];
+                            red = color >> 24;
+                            green = color >> 16;
+                            blue = color >> 8;
+                            
+                            redTotal += red;
+                            greenTotal += green;
+                            blueTotal += blue;
+                        }
+                    }
+                }
+                red = redTotal/9;
+                green = redTotal/9;
+                blue = blueTotal/9;
+                
+                setPixel(x,y,red,green,blue);
+            }
+        }
+    }
+    
     void Screen::update() {
-        SDL_UpdateTexture(m_texture, NULL, m_buffer, SCREEN_WIDTH*sizeof(Uint32));
+        SDL_UpdateTexture(m_texture, NULL, m_buffer1, SCREEN_WIDTH*sizeof(Uint32));
         SDL_RenderClear(m_renderer);
         SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
         SDL_RenderPresent(m_renderer);
@@ -90,7 +137,7 @@ namespace jca {
         color <<=8;
         color += 0xFF;
         
-        m_buffer[(y * SCREEN_WIDTH) + x] = color;
+        m_buffer1[(y * SCREEN_WIDTH) + x] = color;
     }
     
     bool Screen::processEvents() {
@@ -104,7 +151,8 @@ namespace jca {
     }
     
     void Screen::close() {
-        delete [] m_buffer;
+        delete [] m_buffer1;
+        delete [] m_buffer2;
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyTexture(m_texture);
         SDL_DestroyWindow(m_window);
